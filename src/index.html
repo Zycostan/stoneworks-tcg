@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoneworks TCG</title>
+    <link rel="stylesheet" href="/static/style.css">  <!-- Link to the CSS file -->
+</head>
+<body>
+    <h1>Stoneowkrs TCG</h1>
+    <div id="card-container" class="card-container"></div>
+
+    <script>
+        // Function to generate a random stat (for Attack and Defense)
+        function getRandomStat(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Create card element for each image and username
+        function createCard(image, username) {
+            const stats = {
+                attack: getRandomStat(10, 100),
+                defense: getRandomStat(10, 100),
+            };
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const img = document.createElement('img');
+            img.src = image;
+            img.alt = username;  // Set the alt text to the username
+
+            const statsDiv = document.createElement('div');
+            statsDiv.className = 'stats';
+            statsDiv.innerHTML = `
+                <div class="username">${username}</div>
+                <p><strong>Attack:</strong> ${stats.attack}</p>
+                <p><strong>Defense:</strong> ${stats.defense}</p>
+            `;
+
+            card.appendChild(img);
+            card.appendChild(statsDiv);
+
+            return card;
+        }
+
+        // Function to fetch and render cards
+        async function renderCards() {
+            const container = document.getElementById('card-container');
+            try {
+                const response = await fetch('/api/images');
+                const images = await response.json();
+                images.forEach(imageData => {
+                    console.log('Loading image:', imageData);  // Debugging line
+                    const card = createCard(`/static/${imageData.image_path}`, imageData.username);
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        }
+
+        // Render the cards on page load
+        renderCards();
+    </script>
+</body>
+</html>
